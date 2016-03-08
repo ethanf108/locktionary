@@ -1,0 +1,9 @@
+Package: locktionary
+Name: locktionary
+Depends: mobilesubstrate
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: easy dictionary search on lock screen
+Maintainer: Half/Net <halfnetdev@gmail.com>
+Author: Half/Net <halfnetdev@gmail.com>
+Section: Tweaks
