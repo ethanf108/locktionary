@@ -32,7 +32,7 @@
 			<key>key</key>
 			<string>autolock</string>
 			<key>label</key>
-			<string>Auto Lock</string>
+			<string>Disable Auto Lock</string>
 		</dict>
 	</array>
 	<key>title</key>
