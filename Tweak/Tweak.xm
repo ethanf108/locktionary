@@ -136,9 +136,24 @@ UIReferenceLibraryViewController *dictionaryViewController;
 {
 	if(dictionaryViewController.isViewLoaded && dictionaryViewController.view.window)
 	{
-		[dictionaryViewController dismissModalViewControllerAnimated:YES];
+		UIAlertController *alertController = [UIAlertController
+			      alertControllerWithTitle:@"Not Supported"
+			      message:@"Searching the web is not supported on the Lock Screen"
+			      preferredStyle:UIAlertControllerStyleAlert];
 
-		NSLog(@"Searching Web Not Supported");
+		UIAlertAction *okAction = [UIAlertAction 
+			actionWithTitle:@"OK"
+			style:UIAlertActionStyleCancel
+			handler:^(UIAlertAction *action)
+				{
+					NSLog(@"OK action");
+				}
+			];
+
+		[alertController addAction:okAction];
+
+		[self presentViewController:alertController animated:YES completion:nil];
+
 	
 	}
 	else
