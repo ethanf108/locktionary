@@ -8,12 +8,12 @@
 @end
 
 @interface SBLockScreenView : UIView
-@property (assign) id delegate; 												//@synthesize delegate=_delegate - In the implementation block
+@property (assign) id delegate;
 -(UIScrollView *)scrollView;
 @end
 
-@interface SBLockScreenViewController : UIViewController <UITextFieldDelegate, UINavigationControllerDelegate>
-- (void)textFieldFinished:(id)sender;
+@interface SBLockScreenViewController : UIViewController <UISearchBarDelegate, UINavigationControllerDelegate>
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar;
 @end
 
 
@@ -21,7 +21,7 @@
 
 BOOL shouldAutoLock;
 NSNumber* autoLockEnabled;
-NSNumber* shouldShowTextField;
+NSNumber* shouldShowDictSearchBar;
 
 - (BOOL)canRelockForAutoDimTimer
 {
@@ -53,7 +53,7 @@ NSNumber* shouldShowTextField;
 
 %hook SBLockScreenViewController
 
-UITextField *textInputField;
+UISearchBar *dictSearchBar;
 SBLockScreenScrollView *scrollView;
 UIReferenceLibraryViewController *dictionaryViewController;
 
@@ -64,22 +64,24 @@ UIReferenceLibraryViewController *dictionaryViewController;
 	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:
 	[NSString stringWithFormat:@"%@/Library/Preferences/%@", NSHomeDirectory(), @"com.halfnet.locktionaryPrefs.plist"]];
 
-	shouldShowTextField = [settings objectForKey:@"enabled"];
+	shouldShowDictSearchBar = [settings objectForKey:@"enabled"];
 	autoLockEnabled = [settings objectForKey:@"autolock"];
 
-	textInputField = [[UITextField alloc] init];
+	dictSearchBar = [[UISearchBar alloc] init];
 
-	[textInputField setReturnKeyType:UIReturnKeyDone];
+	[dictSearchBar setBackgroundImage:[[UIImage alloc]init]];
 
-	textInputField.backgroundColor = [UIColor whiteColor];
+	dictSearchBar.backgroundColor = [UIColor whiteColor];
 
-	textInputField.placeholder = @"Search Dictionary";
-	
-	[textInputField addTarget:self action:@selector(textFieldFinished:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	dictSearchBar.placeholder = @"Search Dictionary";
+
+	dictSearchBar.layer.cornerRadius = 10;
+
+	dictSearchBar.delegate = self;
 
 	scrollView = MSHookIvar <SBLockScreenScrollView *>(self.view , "_foregroundScrollView");
 
-	[scrollView addSubview:textInputField];
+	[scrollView addSubview:dictSearchBar];
 
 	shouldAutoLock = YES;
 }
@@ -94,14 +96,14 @@ UIReferenceLibraryViewController *dictionaryViewController;
 	CGFloat scrollViewWidth = scrollView.frame.size.width;
 	CGFloat scrollViewHeight = scrollView.frame.size.height;
 
-	[textInputField setFrame:CGRectMake(
-	scrollViewWidth + 10.0f,
-	scrollViewHeight * 0.3f,
-	scrollViewWidth - 20.0f,
-	scrollViewHeight * 0.07f
+	[dictSearchBar setFrame:CGRectMake(
+	scrollViewWidth + 400.0f,
+	scrollViewHeight * 0.04f,
+	scrollViewWidth - 800.0f,
+	scrollViewHeight * 0.05f
 	)];
 
-	[textInputField setHidden:![shouldShowTextField boolValue]];
+	[dictSearchBar setHidden:![shouldShowDictSearchBar boolValue]];
 
 	shouldAutoLock = YES;
 
@@ -117,17 +119,15 @@ UIReferenceLibraryViewController *dictionaryViewController;
 }
 
 %new
-- (void)textFieldFinished:(UITextField *)textField
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+	[searchBar resignFirstResponder];
 
-	[textField resignFirstResponder];
-
-	dictionaryViewController = [[UIReferenceLibraryViewController alloc] initWithTerm:textField.text];
+	dictionaryViewController = [[UIReferenceLibraryViewController alloc] initWithTerm:searchBar.text];
 	
 	[self presentModalViewController:dictionaryViewController animated:YES];  
 
 	shouldAutoLock = NO;
-
 }
 %end
 
@@ -137,8 +137,6 @@ UIReferenceLibraryViewController *dictionaryViewController;
 	if(dictionaryViewController.isViewLoaded && dictionaryViewController.view.window)
 	{
 		[dictionaryViewController dismissModalViewControllerAnimated:YES];
-
-		textInputField.text = @"Search Web Pressed";
 
 		NSLog(@"Searching Web Not Supported");
 	
