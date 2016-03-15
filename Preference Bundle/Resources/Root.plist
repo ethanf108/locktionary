@@ -7,6 +7,10 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Enabling this feature will cause the lock screen to not turn off while viewing a dictionary definition.</string>
+			<key>isStaticText</key>
+			<true/>
 			<key>label</key>
 			<string>Locktionary Preferences</string>
 		</dict>
