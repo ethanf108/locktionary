@@ -97,9 +97,9 @@ UIReferenceLibraryViewController *dictionaryViewController;
 	CGFloat scrollViewHeight = scrollView.frame.size.height;
 
 	[dictSearchBar setFrame:CGRectMake(
-	scrollViewWidth + 400.0f,
+	scrollViewWidth * 1.35,
 	scrollViewHeight * 0.04f,
-	scrollViewWidth - 800.0f,
+	scrollViewWidth * 0.3f,
 	scrollViewHeight * 0.05f
 	)];
 
